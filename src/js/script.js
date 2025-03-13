@@ -368,20 +368,46 @@ restartButton.addEventListener("click", function (event) {
   window.addEventListener("mouseup", handleMouseUp);
 });
 
-// Separate mouse event handlers
+// Get mobile tap button element
+const mobileTapButton = document.getElementById("mobile-tap");
+
+// Add touch event listeners for mobile
+mobileTapButton.addEventListener('touchstart', handleTouchStart, { passive: false });
+mobileTapButton.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+function handleTouchStart(event) {
+    event.preventDefault();
+    if (phase === "waiting") {
+        lastTimestamp = undefined;
+        phase = "stretching";
+        window.requestAnimationFrame(animate);
+    }
+}
+
+function handleTouchEnd(event) {
+    event.preventDefault();
+    if (phase === "stretching") {
+        phase = "turning";
+    }
+}
+
+// Update the existing mouse event handlers
 function handleMouseDown(event) {
-  if (phase == "waiting") {
-    lastTimestamp = undefined;
-    introductionElement.style.opacity = 0;
-    phase = "stretching";
-    window.requestAnimationFrame(animate);
-  }
+    if (!event.target.classList.contains('mobile-tap-button')) {
+        if (phase === "waiting") {
+            lastTimestamp = undefined;
+            phase = "stretching";
+            window.requestAnimationFrame(animate);
+        }
+    }
 }
 
 function handleMouseUp(event) {
-  if (phase == "stretching") {
-    phase = "turning";
-  }
+    if (!event.target.classList.contains('mobile-tap-button')) {
+        if (phase === "stretching") {
+            phase = "turning";
+        }
+    }
 }
 
 // Replace existing mouse event listeners with the new handlers
